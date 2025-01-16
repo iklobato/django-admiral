@@ -1,229 +1,248 @@
-# Django Admiral
+# Django Admiral 🚢
 
-Django Admiral is a powerful testing framework for Django Admin interfaces that helps you automatically test filters, search functionality, and other admin panel features using Selenium WebDriver.
+Django Admiral is a robust testing framework designed to automate comprehensive testing of Django Admin interfaces. Built with Selenium WebDriver, it provides an extensive suite of tools for testing filters, search functionality, form validations, and other admin panel features.
 
-## Features
+## ✨ Features
 
-- Automated testing of Django Admin filters
-- Search functionality testing
-- Add form validation
-- List action testing
-- Column sorting verification
-- Headless browser testing support
-- Easy to integrate with existing Django projects
-- Customizable filter testing
+### Core Testing Capabilities
+- 🔍 Automated testing of all admin filters with custom filter support
+- 🔎 Comprehensive search functionality testing
+- 📝 Form validation and submission testing
+- 📋 Bulk action verification
+- 🔄 Column sorting and ordering tests
+- 📊 List view pagination testing
 
-## Installation
+### Advanced Features
+- 📸 Automatic screenshot capture on test failures
+- 🌐 Multiple browser support (Chrome, Firefox)
+- 🎯 Custom wait conditions for dynamic content
+- ⚙️ Flexible configuration through Django settings
+- 🔧 Extensible test cases with mixins
+- 📦 Modular design for easy customization
+
+### Developer Experience
+- 🚀 Simple integration with existing Django projects
+- 📝 Detailed error reporting with screenshots
+- 🔄 Seamless CI/CD integration
+- 🎨 Clean, Pythonic API
+
+## 🛠 Installation
 
 ```bash
 pip install django-admiral
 ```
 
-## Requirements
+## 📋 Requirements
 
-- Python 3.6+
-- Django 3.0+
-- Selenium WebDriver
-- Chrome/Chromium browser
+- Python 3.8+
+- Django 3.2+
+- Selenium 4.0+
+- Chrome/Firefox browser
 
-## Quick Start
+## 📁 Project Structure
 
-1. First, install the required dependencies:
-
-```bash
-pip install selenium webdriver_manager
+```
+django-admiral/
+├── django_admiral/
+│   ├── __init__.py
+│   ├── apps.py
+│   ├── browsers.py
+│   ├── decorators.py
+│   ├── exceptions.py
+│   ├── mixins.py
+│   ├── settings.py
+│   ├── test_cases.py
+│   └── utils.py
+├── tests/
+│   ├── __init__.py
+│   └── test_admin.py
+├── LICENSE
+├── MANIFEST.in
+├── README.md
+├── setup.cfg
+└── setup.py
 ```
 
-2. Create a test file for your model (e.g., `tests.py`):
+## 🚀 Quick Start
+
+1. Add 'django_admiral' to your INSTALLED_APPS:
+
+```python
+INSTALLED_APPS = [
+    ...
+    'django_admiral',
+]
+```
+
+2. Configure settings in your Django settings file:
+
+```python
+# Django Admiral settings
+ADMIN_TESTER_BROWSER = 'chrome'  # or 'firefox'
+ADMIN_TESTER_HEADLESS = True
+ADMIN_TESTER_SCREENSHOT_ON_FAILURE = True
+ADMIN_TESTER_SCREENSHOT_DIR = 'test_screenshots'
+```
+
+3. Create your test case:
 
 ```python
 from django_admiral import AdminPageTest
-from .models import UserProfile
+from myapp.models import Product
 
-class TestUserProfile(AdminPageTest):
-    model_class = UserProfile
-    test_filters = ('status', 'created_date')  # Optional: specify filters to test
+class ProductAdminTest(AdminPageTest):
+    model_class = Product
+    test_filters = ['category', 'status']
 ```
 
-3. Run your tests:
+## 💡 Usage Examples
 
-```bash
-python manage.py test
-```
-
-## Usage Examples
-
-### Basic Usage
+### Basic Admin Testing
 
 ```python
 from django_admiral import AdminPageTest
-from .models import UserProfile
+from myapp.models import Product
 
-class TestUserProfile(AdminPageTest):
-    model_class = UserProfile
+class ProductAdminTest(AdminPageTest):
+    model_class = Product
 ```
 
-### Testing Specific Filters
+### Advanced Configuration
 
 ```python
-class TestUserProfile(AdminPageTest):
-    model_class = UserProfile
-    test_filters = ('count_filter', 'TransactionsCustomFilter')
-```
+from django_admiral import AdminPageTest, AdminTesterSettings
+from myapp.models import Order
 
-### Custom Setup
-
-```python
-class TestUserProfile(AdminPageTest):
-    model_class = UserProfile
-    test_filters = ('status', 'date_joined')
-
-    def setUp(self):
-        super().setUp()
-        # Add your custom setup here
-        self.user_profile = UserProfile.objects.create(
-            name="Test User",
-            status="active"
-        )
-```
-
-## What Gets Tested
-
-When you run the tests, Django Admiral automatically checks:
-
-1. **Filters**
-   - Clicks each filter option
-   - Verifies no errors occur
-   - Tests specified filters or all filters if none specified
-
-2. **Search**
-   - Tests the search functionality
-   - Verifies search results load properly
-
-3. **Add Form**
-   - Attempts to access the add form
-   - Verifies form loads correctly
-
-4. **List Actions**
-   - Tests all available list actions
-   - Verifies action dropdowns work correctly
-
-5. **Sorting**
-   - Tests column sorting
-   - Verifies sort operations complete successfully
-
-## Configuration
-
-### Headless Testing
-
-By default, tests run in headless mode. You can modify this in your test class:
-
-```python
-@classmethod
-def setUpClass(cls):
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')  # Remove this line to see the browser
-    cls.selenium = webdriver.Chrome(options=chrome_options)
-```
-
-### Custom Wait Times
-
-```python
-class TestUserProfile(AdminPageTest):
-    model_class = UserProfile
+class OrderAdminTest(AdminPageTest):
+    model_class = Order
+    test_filters = ['status', 'payment_method']
+    browser_type = 'firefox'
     
     @classmethod
     def setUpClass(cls):
+        cls.custom_settings = AdminTesterSettings(
+            wait_timeout=15,
+            screenshot_on_failure=True,
+            window_size=(1920, 1080)
+        )
         super().setUpClass()
-        cls.selenium.implicitly_wait(20)  # Customize wait time
 ```
 
-## Contributing
+### Custom Wait Conditions
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```python
+from django_admiral import AdminPageTest
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
-## License
+class CustomAdminTest(AdminPageTest):
+    model_class = MyModel
+    
+    def setUp(self):
+        super().setUp()
+        self.custom_wait_conditions = {
+            'table_loaded': (EC.presence_of_element_located, 
+                           (By.CLASS_NAME, 'results')),
+            'filters_ready': (EC.element_to_be_clickable, 
+                            (By.CLASS_NAME, 'admin-filter'))
+        }
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## ⚙️ Configuration Options
 
-## Support
+### Available Settings
 
-If you encounter any issues or have questions, please file an issue on the GitHub repository.
+```python
+ADMIN_TESTER_SETTINGS = {
+    'WAIT_TIMEOUT': 10,
+    'IMPLICIT_WAIT': 10,
+    'BROWSER': 'chrome',
+    'HEADLESS': True,
+    'WINDOW_SIZE': (1920, 1080),
+    'SCREENSHOT_ON_FAILURE': True,
+    'SCREENSHOT_DIR': 'test_screenshots',
+    'DEFAULT_ADMIN_USERNAME': 'admin',
+    'DEFAULT_ADMIN_EMAIL': 'admin@example.com',
+    'DEFAULT_ADMIN_PASSWORD': 'admin123',
+    'CUSTOM_WAIT_CONDITIONS': {},
+}
+```
 
-## Acknowledgments
+### Browser Support
 
-- Django Admin interface
-- Selenium WebDriver
-- Python Testing Framework
+Currently supported browsers:
+- Chrome/Chromium (default)
+- Firefox
 
-# Django Admiral Development Roadmap
+## 🧪 Test Coverage
 
-| Category | Feature | Priority | Status | Description |
-|----------|---------|----------|--------|-------------|
-| **Core Testing** | Permission Testing | High | 🚀 Planned | Test user roles, access restrictions, and custom permissions |
-| | Form Validation | High | 🚀 Planned | Validate required fields, custom validators, error messages |
-| | Bulk Actions | Medium | 💡 Proposed | Test bulk operations, confirmations, and permissions |
-| | Advanced Filters | High | 🚀 Planned | Test filter combinations, ranges, and dependencies |
-| | Custom Actions | Medium | 💡 Proposed | Support for testing custom admin actions |
-|----------|---------|----------|--------|-------------|
-| **Performance** | Response Metrics | Medium | 💡 Proposed | Track load times, response times, and performance metrics |
-| | Load Testing | Low | 🤔 Considering | Test admin performance under heavy load |
-| | Pagination Testing | Medium | 💡 Proposed | Test with large datasets and different page sizes |
-| | Memory Usage | Low | 🤔 Considering | Monitor and optimize memory consumption |
-|----------|---------|----------|--------|-------------|
-| **UI/UX** | Responsive Testing | High | 🚀 Planned | Test mobile, tablet, and desktop views |
-| | Accessibility | High | 🚀 Planned | ARIA labels, keyboard navigation, screen readers |
-| | Visual Testing | Medium | 💡 Proposed | Screenshot comparison and visual regression |
-| | Layout Validation | Medium | 💡 Proposed | Verify UI elements positioning and styling |
-|----------|---------|----------|--------|-------------|
-| **Integration** | Multi-Browser | High | 🚀 Planned | Support Firefox, Safari, and other browsers |
-| | CI/CD Pipeline | High | 🚀 Planned | Easy integration with common CI/CD platforms |
-| | Docker Support | Medium | 💡 Proposed | Containerized testing environment |
-| | Database Support | Medium | 💡 Proposed | Test with different database backends |
-|----------|---------|----------|--------|-------------|
-| **Advanced Features** | Auto Test Generation | High | 🚀 Planned | Generate tests based on model structure |
-| | Factory Integration | Medium | 💡 Proposed | Integration with factory_boy for test data |
-| | Smart Scenarios | Low | 🤔 Considering | AI-powered test scenario generation |
-| | Data Validation | High | 🚀 Planned | Complex data validation patterns |
-|----------|---------|----------|--------|-------------|
-| **Reporting** | Test Reports | High | 🚀 Planned | Detailed HTML/PDF test reports |
-| | Coverage Analysis | Medium | 💡 Proposed | Track test coverage metrics |
-| | Failure Analysis | High | 🚀 Planned | Detailed failure analysis with screenshots |
-| | Metrics Dashboard | Low | 🤔 Considering | Web dashboard for test metrics |
-|----------|---------|----------|--------|-------------|
-| **Developer Tools** | CLI Tool | Medium | 💡 Proposed | Command-line interface for test management |
-| | Debug Mode | High | 🚀 Planned | Enhanced logging and debugging capabilities |
-| | Configuration GUI | Low | 🤔 Considering | Visual test configuration interface |
-| | Plugin System | Medium | 💡 Proposed | Extensible architecture for plugins |
-|----------|---------|----------|--------|-------------|
-| **Security** | CSRF Testing | High | 🚀 Planned | Test token validation and security measures |
-| | XSS Prevention | High | 🚀 Planned | Test input sanitization and encoding |
-| | Auth Testing | High | 🚀 Planned | Comprehensive authentication testing |
-| | Session Security | Medium | 💡 Proposed | Test session handling and security |
-|----------|---------|----------|--------|-------------|
-| **Reliability** | Error Handling | High | 🚀 Planned | Test various failure scenarios |
-| | State Management | Medium | 💡 Proposed | Test state preservation and navigation |
-| | Recovery Testing | Medium | 💡 Proposed | Test system recovery procedures |
-| | Concurrency | Low | 🤔 Considering | Test concurrent user actions |
-|----------|---------|----------|--------|-------------|
-| **Documentation** | Interactive Docs | High | 🚀 Planned | Interactive examples and tutorials |
-| | Video Tutorials | Low | 🤔 Considering | Video-based learning resources |
-| | Best Practices | High | 🚀 Planned | Comprehensive best practices guide |
-| | API Reference | High | 🚀 Planned | Detailed API documentation |
+Django Admiral automatically tests:
 
-**Status Legend:**
-- 🚀 Planned: High priority, actively being worked on
-- 💡 Proposed: Medium priority, in planning phase
-- 🤔 Considering: Low priority, under consideration
+1. **Filter Operations**
+   - Filter presence and clickability
+   - Filter option selections
+   - Multiple filter combinations
+   - Filter reset functionality
 
-**Priority Levels:**
-- High: Critical for core functionality
-- Medium: Important but not critical
-- Low: Nice to have features
-## Change Log
+2. **Search Functionality**
+   - Search input presence
+   - Search result loading
+   - Empty search handling
+   - Search with special characters
 
-### 1.0.0
-- Initial release
-- Basic filter testing
-- Admin panel navigation
-- Headless browser support
+3. **Form Operations**
+   - Add form accessibility
+   - Form field validation
+   - Form submission
+   - Error message handling
+
+4. **List Actions**
+   - Action dropdown presence
+   - Action selection
+   - Bulk action execution
+   - Action confirmation dialogs
+
+5. **Sorting and Pagination**
+   - Column sort operations
+   - Multiple column sorting
+   - Page navigation
+   - Items per page selection
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 🗓 Roadmap
+
+### Upcoming Features
+- 🚀 Support for async operations testing
+- 🚀 Custom admin action testing helpers
+- 💡 API endpoint testing integration
+- 💡 Advanced reporting capabilities
+- 🤔 Performance testing tools
+- 🤔 Security testing features
+
+## 📊 Version History
+
+### 1.0.0 (2024-01-16)
+- Initial release with core feature set
+- Multiple browser support
+- Screenshot capabilities
+- Custom wait conditions
+- Comprehensive documentation
+
+### 1.1.0 (Coming Soon)
+- Advanced reporting features
+- Custom action testing
+- Performance improvements
+- Additional browser support

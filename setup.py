@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
+
 def read_requirements(filename):
     with open(filename) as f:
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
+
 
 setup(
     name='django-admiral',

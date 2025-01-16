@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 from django.conf import settings
 
+
 class DjangoAdminTesterConfig(AppConfig):
     name = 'django_admin_tester'
     verbose_name = 'Django Admin Tester'
@@ -8,10 +9,10 @@ class DjangoAdminTesterConfig(AppConfig):
     def ready(self):
         # Import signal handlers
         from . import signals
-        
+
         # Register default settings
         self.register_default_settings()
-    
+
     def register_default_settings(self):
         """Register default settings for the app."""
         defaults = {
@@ -27,9 +28,7 @@ class DjangoAdminTesterConfig(AppConfig):
             'ADMIN_TESTER_DEFAULT_ADMIN_PASSWORD': 'admin123',
             'ADMIN_TESTER_CUSTOM_WAIT_CONDITIONS': {},
         }
-        
+
         for key, default_value in defaults.items():
             if not hasattr(settings, key):
                 setattr(settings, key, default_value)
-
-

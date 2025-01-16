@@ -1,3 +1,5 @@
+[![Coverage Status](https://codecov.io/gh/yourusername/django-admiral/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/django-admiral)
+
 # Django Admiral 🚢
 
 Django Admiral is a robust testing framework designed to automate comprehensive testing of Django Admin interfaces. Built with Selenium WebDriver, it provides an extensive suite of tools for testing filters, search functionality, form validations, and other admin panel features.

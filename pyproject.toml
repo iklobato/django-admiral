@@ -6,11 +6,11 @@ build-backend = "hatchling.build"
 name = "django-admiral"
 version = "0.1.0"
 authors = [
-    { name = "iklobato", email = "iklobato1@gmail.com" },
+    { name = "iklobato", email = "iklobato@gmail.com" },
 ]
 description = "A comprehensive testing framework for Django Admin interfaces using Selenium"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8.1"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Web Environment",
@@ -57,10 +57,10 @@ docs = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/django-admiral"
-"Bug Tracker" = "https://github.com/yourusername/django-admiral/issues"
+"Homepage" = "https://github.com/iklobato/django-admiral"
+"Bug Tracker" = "https://github.com/iklobato/django-admiral/issues"
 "Documentation" = "https://django-admiral.readthedocs.io/"
-"Source Code" = "https://github.com/yourusername/django-admiral"
+"Source Code" = "https://github.com/iklobato/django-admiral"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/django_admiral"]

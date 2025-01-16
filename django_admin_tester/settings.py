@@ -2,7 +2,6 @@ from django.conf import settings
 
 
 class AdminTesterSettings:
-    """Settings handler for Django Admin Tester."""
 
     @property
     def WAIT_TIMEOUT(self):
@@ -52,3 +51,4 @@ class AdminTesterSettings:
 
 
 admin_tester_settings = AdminTesterSettings()
+
